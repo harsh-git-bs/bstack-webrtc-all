@@ -85,9 +85,9 @@ public class WebRTCConf {
         } else if (userSelection.equalsIgnoreCase("1.3")) {
             options.addArguments(
                     "--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream",
-                    "--use-file-for-fake-video-capture=D:\\Dummy_Video.mp4"
-            );
-                    // "--use-file-for-fake-audio-capture=C:\\Users\\hello\\Documents\\audio\\250Hz_44100Hz_16bit_05sec.wav");
+                    "--use-file-for-fake-video-capture=C:\\Users\\hello\\Downloads\\sample_960x400_ocean_with_audio.mjpeg",
+                    "--use-file-for-fake-audio-capture=C:\\Users\\hello\\Documents\\audio\\250Hz_44100Hz_16bit_05sec.wav");
+            // "--use-file-for-fake-audio-capture=C:\\Users\\hello\\Documents\\audio\\250Hz_44100Hz_16bit_05sec.wav");
             // "--use-file-for-fake-video-capture=/Users/samiran/Downloads/sample_960x400_ocean_with_audio.mjpeg",
             // "--use-file-for-fake-video-capture=C:\\Users\\hello\\Documents\\video\\sample_mpeg4.mp4"
             // "--use-file-for-fake-video-capture=C:\\Users\\hello\\Downloads\\sample_960x400_ocean_with_audio.mjpeg"
@@ -119,6 +119,11 @@ public class WebRTCConf {
             options.addArguments(
                     "--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream",
                     "--use-file-for-fake-video-capture=C:\\Users\\hello\\Documents\\video\\sample_mjpeg.mjpeg",
+                    "--use-file-for-fake-audio-capture=C:\\Users\\hello\\Documents\\audio\\250Hz_44100Hz_16bit_05sec.wav");
+        } else if (userSelection.equalsIgnoreCase("3.3")) {
+            options.addArguments(
+                    "--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream",
+                    "--use-file-for-fake-video-capture=C:\\Users\\hello\\Downloads\\sample_960x400_ocean_with_audio.mjpeg",
                     "--use-file-for-fake-audio-capture=C:\\Users\\hello\\Documents\\audio\\250Hz_44100Hz_16bit_05sec.wav");
         }
         // options.addArguments("--use-fake-device-for-media-stream",
@@ -158,7 +163,7 @@ public class WebRTCConf {
         return options;
     }
 
-    public static MutableCapabilities getiOSConfiguration() {
+    public static MutableCapabilities getiOSConfiguration(final String userSelection) {
 
         SafariOptions options = new SafariOptions();
         options.setUseTechnologyPreview(true);
@@ -167,22 +172,37 @@ public class WebRTCConf {
         options.setCapability("real_mobile", "true");
         options.setCapability("os_version", "14");
         options.setCapability("autoAcceptAlerts", "true");
-        options.setCapability("build", "WebRTC Dummy Video Call Build - Android-iOS");
+        options.setCapability("build", "WebRTC Testing - iOS");
         options.setCapability("name", "WebRTC Room Joining - iOS");
         options.setCapability("browserstack.idleTimeout", 300);
         options.setCapability("browserstack.user", System.getenv("BROWSERSTACK_USERNAME"));
         options.setCapability("browserstack.key", System.getenv("BROWSERSTACK_ACCESS_KEY"));
-        options.setCapability("browserstack.local", "true");
-        options.setCapability("acceptSslCerts", "true");
+        // options.setCapability("browserstack.local", "true");
+        // options.setCapability("acceptSslCerts", "true");
 
         return options;
     }
 
-    public static MutableCapabilities getAndroidConfiguration() {
+    public static MutableCapabilities getAndroidConfiguration(final String userSelection) {
 
         ChromeOptions options = new ChromeOptions();
+        if (userSelection.equalsIgnoreCase("5.1")) {
+            options.addArguments(
+                    "--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream");
+        } else if (userSelection.equalsIgnoreCase("5.2")) {
+            options.addArguments(
+                    "--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream",
+                    "--use-file-for-fake-video-capture=C:\\Users\\hello\\Documents\\video\\sample_mjpeg.mjpeg",
+                    "--use-file-for-fake-audio-capture=C:\\Users\\hello\\Documents\\audio\\250Hz_44100Hz_16bit_05sec.wav");
+        } else if (userSelection.equalsIgnoreCase("5.3")) {
+            options.addArguments(
+                    "--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream",
+                    "--use-file-for-fake-video-capture=C:\\Users\\hello\\Downloads\\sample_960x400_ocean_with_audio.mjpeg",
+            "--use-file-for-fake-audio-capture=C:\\Users\\hello\\Documents\\audio\\250Hz_44100Hz_16bit_05sec.wav"
+            );
+        }
 
-        options.addArguments("--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream");
+        // options.addArguments("--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream");
 
         options.setCapability("os_version", "11.0");
         options.setCapability("device", "Samsung Galaxy S21");
@@ -193,14 +213,13 @@ public class WebRTCConf {
         options.setCapability("browserstack.idleTimeout", 300);
         options.setCapability("browserstack.user", System.getenv("BROWSERSTACK_USERNAME"));
         options.setCapability("browserstack.key", System.getenv("BROWSERSTACK_ACCESS_KEY"));
-        options.setCapability("browserstack.local", "true");
-        options.setCapability("acceptSslCerts", "true");
+        // options.setCapability("browserstack.local", "true");
+        // options.setCapability("acceptSslCerts", "true");
 
         return options;
     }
 
     public static void createRoom(final MutableCapabilities config, final String userSelection) {
-        System.out.println(config);
         roomCreationThread = new Thread(
                 new WebRTCTestRunner(config, userSelection));
         roomCreationThread.start();
@@ -346,13 +365,84 @@ public class WebRTCConf {
                     // joinRoom(chromeConfiguration, roomId, true, 80000, userSelection);
 
                     break;
-                case "4":
+                case "3.2":
                     System.out.println("Your test would execute on Edge Browser");
+                    // // Creating capabilities for Edge Browser.
+                    edgeConfiguration = getEdgeConfiguration(userSelection);
+
+                    // // Creating the WebRTC Room on Edge Browser.
+                    System.out.println("Creating a Room on Edge Browser");
+                    createRoom(edgeConfiguration, userSelection);
+
+                    // Waiting for other user to join the above created WebRTC room.
+                    Thread.sleep(30000);
+
+                    // // Joining the above created Room on Chrome Browser.
+                    // System.out.println("Joining the Room on Firefox Browser");
+                    // joinRoom(chromeConfiguration, roomId, true, 80000, userSelection);
+
+                    break;
+                case "3.3":
+                    System.out.println("Your test would execute on Edge Browser");
+                    // // Creating capabilities for Edge Browser.
+                    edgeConfiguration = getEdgeConfiguration(userSelection);
+
+                    // // Creating the WebRTC Room on Edge Browser.
+                    System.out.println("Creating a Room on Edge Browser");
+                    createRoom(edgeConfiguration, userSelection);
+
+                    // Waiting for other user to join the above created WebRTC room.
+                    Thread.sleep(30000);
+
+                    // // Joining the above created Room on Chrome Browser.
+                    // System.out.println("Joining the Room on Firefox Browser");
+                    // joinRoom(chromeConfiguration, roomId, true, 80000, userSelection);
+
+                    break;
+                case "4":
+                    System.out.println("Your test would execute on Safari Browser");
                     // Creating capabilities for Safari Browser.
                     MutableCapabilities safariConfiguration = getSafariConfiguration(userSelection);
                     // // Creating the WebRTC Room on Safari Browser.
-                    System.out.println("Creating a Room on Edge Browser");
+                    System.out.println("Creating a Room on Safari Browser");
                     createRoom(safariConfiguration, userSelection);
+
+                    // Waiting for other user to join the above created WebRTC room.
+                    Thread.sleep(30000);
+
+                    // // Joining the above created Room on Chrome Browser.
+                    // System.out.println("Joining the Room on Firefox Browser");
+                    // joinRoom(chromeConfiguration, roomId, true, 80000, userSelection);
+
+                    break;
+                case "5.1":
+                    System.out.println("Your test would execute on Android Browser");
+                    // Creating capabilities for Android Mobile Browser.
+                    MutableCapabilities AndroidConfiguration = getAndroidConfiguration(userSelection);
+                    // // Creating capabilities for iOS Mobile Browser.
+                    // MutableCapabilities iOSConfiguration = getiOSConfiguration(userSelection);
+
+                    // Creating the WebRTC Room on Android Mobile Browser.
+                    System.out.println("Creating a Room on Android Mobile Browser");
+                    // // Creating the WebRTC Room on Safari Browser.
+                    System.out.println("Creating a Room on Android Browser");
+                    createRoom(AndroidConfiguration, userSelection);
+
+                    // Waiting for other user to join the above created WebRTC room.
+                    Thread.sleep(30000);
+
+                    // // Joining the above created Room on Chrome Browser.
+                    // System.out.println("Joining the Room on Firefox Browser");
+                    // joinRoom(chromeConfiguration, roomId, true, 80000, userSelection);
+
+                    break;
+                case "6":
+                    System.out.println("Your test would execute on iOS Browser");
+                    // Creating capabilities for iOS Mobile Browser.
+                    MutableCapabilities iOSConfiguration = getiOSConfiguration(userSelection);
+                    // // Creating the WebRTC Room on iOS Mobile Browser.
+                    System.out.println("Creating a Room on iOS Mobile Browser");
+                    createRoom(iOSConfiguration, userSelection);
 
                     // Waiting for other user to join the above created WebRTC room.
                     Thread.sleep(30000);

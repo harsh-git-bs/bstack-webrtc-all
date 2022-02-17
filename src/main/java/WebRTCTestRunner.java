@@ -42,18 +42,15 @@ public class WebRTCTestRunner implements Runnable {
 
             // Creating new WebRTC Room with generated roomID
 
-            if (userSelection != "5" || userSelection != "6") {
+            if (userSelection.equalsIgnoreCase("5") || userSelection.equalsIgnoreCase("6")) {
+
+            }
+            if (userSelection.equalsIgnoreCase("1.3") || userSelection.equalsIgnoreCase("3.3")) {
                 driver.manage().window().maximize();
-                
-                // driver.get("D://Dummy_Video.mp4");
-                // Thread.sleep(5000);
+                driver.get("http://harsh1.browserstack.com:9890/sample_960x400_ocean_with_audio.mjpeg");
+                Thread.sleep(20000);
                 ((RemoteWebDriver) driver).setFileDetector(new LocalFileDetector());
             }
-            // else if (userSelection.equalsIgnoreCase("1.3")) {
-            // System.out.println("exec 1.3");
-            // driver.get("file:///D:Dummy_Video.mp4");
-            // ((RemoteWebDriver) driver).setFileDetector(new LocalFileDetector());
-            // }
             driver.get(appRTCURL);
             Thread.sleep(5000);
 
