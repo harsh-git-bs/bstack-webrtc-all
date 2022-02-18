@@ -1,5 +1,11 @@
+import java.io.File;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
+
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.ios.IOSElement;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.MutableCapabilities;
@@ -16,18 +22,22 @@ public class WebRTCTestRunner implements Runnable {
 
     public static final String HUB_URL = "https://hub-cloud.browserstack.com/wd/hub";
     WebDriver driver = null;
+    AndroidDriver<WebElement> androidDriver = null;
+    IOSDriver<IOSElement> iOSDriver = null;
     String appRTCURL = "https://webrtc.github.io/samples/src/content/devices/input-output/";
     // String roomId = null;
+    String deviceType = null;
     // boolean joinExisting = false;
     String userSelection = null;
     // long duration = 15000;
     MutableCapabilities options = null;
 
-    public WebRTCTestRunner(final MutableCapabilities options, final String userSelection) {
+    public WebRTCTestRunner(final MutableCapabilities options, final String deviceType, final String userSelection) {
         this.options = options;
         // this.roomId = roomId;
         // this.joinExisting = joinExisting;
         // this.duration = duration;
+        this.deviceType = deviceType;
         this.userSelection = userSelection;
     }
 
@@ -38,21 +48,65 @@ public class WebRTCTestRunner implements Runnable {
             // Creating Remote WebDriver based on the capabilites defined in
             // WebRTCConf.java.
 
-            driver = new RemoteWebDriver(new URL(HUB_URL), options);
+            //
 
-            // Creating new WebRTC Room with generated roomID
+            if (deviceType.equalsIgnoreCase("browser")) {
+                driver = new RemoteWebDriver(new URL(HUB_URL), options);
+                // driver.manage().window().maximize();
+                if (userSelection.equalsIgnoreCase("1.3") || userSelection.equalsIgnoreCase("3.3")) {
+                    driver.get("http://harsh1.browserstack.com:9890/sample_960x400_ocean_with_audio.mjpeg");
+                    Thread.sleep(20000);
+                    // ((RemoteWebDriver) driver).setFileDetector(new LocalFileDetector());
+                }
+                driver.get(appRTCURL);
+                Thread.sleep(5000);
 
-            if (userSelection.equalsIgnoreCase("5") || userSelection.equalsIgnoreCase("6")) {
-
+            } else if (deviceType.equalsIgnoreCase("android")) {
+                androidDriver = new AndroidDriver<WebElement>(new URL(HUB_URL), options);
+                if (userSelection.equalsIgnoreCase("5.3")) {
+                    androidDriver.pushFile("/data/local/tmp/sample_960x400_ocean_with_audio.mjpeg",
+                            new File("/Users/harsh/Downloads/dummy/sample_960x400_ocean_with_audio.mjpeg"));
+                    Thread.sleep(20000);
+                }
+                androidDriver.get(appRTCURL);
+                Thread.sleep(5000);
+            } else {
+                iOSDriver = new IOSDriver<IOSElement>(new URL(HUB_URL), options);
+                iOSDriver.get(appRTCURL);
+                Thread.sleep(5000);
             }
-            if (userSelection.equalsIgnoreCase("1.3") || userSelection.equalsIgnoreCase("3.3")) {
-                driver.manage().window().maximize();
-                driver.get("http://harsh1.browserstack.com:9890/sample_960x400_ocean_with_audio.mjpeg");
-                Thread.sleep(20000);
-                ((RemoteWebDriver) driver).setFileDetector(new LocalFileDetector());
-            }
-            driver.get(appRTCURL);
-            Thread.sleep(5000);
+
+            // if (userSelection.equalsIgnoreCase("5.1") ||
+            // userSelection.equalsIgnoreCase("5.3")) {
+            // androidDriver = new AndroidDriver<WebElement>(new URL(HUB_URL), options);
+            // } else {
+            // driver = new RemoteWebDriver(new URL(HUB_URL), options);
+            // }
+
+            // // Creating new WebRTC Room with generated roomID
+
+            // if (userSelection.equalsIgnoreCase("5.1") ||
+            // userSelection.equalsIgnoreCase("5.3")) {
+
+            // // ((RemoteWebDriver) driver).setFileDetector(new LocalFileDetector());
+            // //
+            // driver.get("http://harsh1.browserstack.com:9890/sample_960x400_ocean_with_audio.mjpeg");
+            // androidDriver.pushFile("/data/local/tmp/sample_960x400_ocean_with_audio.mjpeg",
+            // new
+            // File("/Users/harsh/Downloads/dummy/sample_960x400_ocean_with_audio.mjpeg"));
+            // Thread.sleep(20000);
+            // androidDriver.get(appRTCURL);
+
+            // }
+            // if (userSelection.equalsIgnoreCase("1.3") ||
+            // userSelection.equalsIgnoreCase("3.3")) {
+            // driver.manage().window().maximize();
+            // driver.get("http://harsh1.browserstack.com:9890/sample_960x400_ocean_with_audio.mjpeg");
+            // Thread.sleep(20000);
+            // ((RemoteWebDriver) driver).setFileDetector(new LocalFileDetector());
+            // }
+            // // driver.get(appRTCURL);
+            // Thread.sleep(5000);
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -60,6 +114,14 @@ public class WebRTCTestRunner implements Runnable {
             if (driver != null) {
 
                 driver.quit();
+            }
+            if (androidDriver != null) {
+
+                androidDriver.quit();
+            }
+            if (iOSDriver != null) {
+
+                iOSDriver.quit();
             }
         }
     }

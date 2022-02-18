@@ -197,18 +197,20 @@ public class WebRTCConf {
         } else if (userSelection.equalsIgnoreCase("5.3")) {
             options.addArguments(
                     "--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream",
-                    "--use-file-for-fake-video-capture=C:\\Users\\hello\\Downloads\\sample_960x400_ocean_with_audio.mjpeg",
-            "--use-file-for-fake-audio-capture=C:\\Users\\hello\\Documents\\audio\\250Hz_44100Hz_16bit_05sec.wav"
+                    "--use-file-for-fake-video-capture=/data/local/tmp/sample_960x400_ocean_with_audio.mjpeg"
+            // "--use-file-for-fake-video-capture=/storage/emulated/0/Android/data/com.android.chrome/file/Download/sample_960x400_ocean_with_audio.mjpeg"
+            // "--use-file-for-fake-audio-capture=/data/local/tmp/250Hz_44100Hz_16bit_05sec.wav"
             );
         }
 
-        // options.addArguments("--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream");
+        // options.addArguments("--use-fake-device-for-media-stream",
+        // "--use-fake-ui-for-media-stream");
 
         options.setCapability("os_version", "11.0");
         options.setCapability("device", "Samsung Galaxy S21");
         options.setCapability("real_mobile", "true");
         options.setCapability("autoGrantPermissions", "true");
-        options.setCapability("build", "WebRTC Dummy Video Call Build - Android-iOS");
+        options.setCapability("build", "WebRTC  Testing Android");
         options.setCapability("name", "WebRTC Room Creation - Android");
         options.setCapability("browserstack.idleTimeout", 300);
         options.setCapability("browserstack.user", System.getenv("BROWSERSTACK_USERNAME"));
@@ -219,9 +221,10 @@ public class WebRTCConf {
         return options;
     }
 
-    public static void createRoom(final MutableCapabilities config, final String userSelection) {
+    public static void createSession(final MutableCapabilities config, final String deviceType,
+            final String userSelection) {
         roomCreationThread = new Thread(
-                new WebRTCTestRunner(config, userSelection));
+                new WebRTCTestRunner(config, deviceType, userSelection));
         roomCreationThread.start();
 
     }
@@ -264,7 +267,9 @@ public class WebRTCConf {
             System.out.println("3.2 : Press 3.2 to initiate WebRTC test on Edge Browser with Custom Video");
             System.out.println("3.3 : Press 3.3 to initiate WebRTC test on Edge Browser with Your Video file");
             System.out.println("4 : Press 4 to initiate WebRTC test on Safari Browser");
-            System.out.println("5 : Press 5 to initiate WebRTC test on Chrome Browser for Android ");
+            System.out.println("5.1 : Press 5 to initiate WebRTC test on Chrome Browser for Android ");
+            System.out.println("5.2 : Press 5 to initiate WebRTC test on Chrome Browser for Android ");
+            System.out.println("5.3 : Press 5 to initiate WebRTC test on Chrome Browser for Android ");
             System.out.println("6 : Press 6 to initiate WebRTC test on Safari Browser for iOS");
             String userSelection = sc.next();
 
@@ -278,7 +283,7 @@ public class WebRTCConf {
 
                     // Creating the WebRTC Room on Chrome Browser.
                     System.out.println("Creating a Room on Chrome Browser");
-                    createRoom(chromeConfiguration, userSelection);
+                    createSession(chromeConfiguration, "browser", userSelection);
 
                     // Waiting for other user to join the above created WebRTC room.
                     Thread.sleep(30000);
@@ -298,7 +303,7 @@ public class WebRTCConf {
 
                     // Creating the WebRTC Room on Chrome Browser.
                     System.out.println("Creating a Room on Chrome Browser");
-                    createRoom(chromeConfiguration, userSelection);
+                    createSession(chromeConfiguration, "browser", userSelection);
 
                     // Waiting for other user to join the above created WebRTC room.
                     Thread.sleep(30000);
@@ -318,7 +323,7 @@ public class WebRTCConf {
 
                     // Creating the WebRTC Room on Chrome Browser.
                     System.out.println("Creating a Room on Chrome Browser");
-                    createRoom(chromeConfiguration, userSelection);
+                    createSession(chromeConfiguration, "browser", userSelection);
 
                     // Waiting for other user to join the above created WebRTC room.
                     Thread.sleep(30000);
@@ -338,7 +343,7 @@ public class WebRTCConf {
 
                     // Creating the WebRTC Room on Firefox Browser.
                     System.out.println("Creating a Room on Firefox Browser");
-                    createRoom(fireFoxConfiguration, userSelection);
+                    createSession(fireFoxConfiguration, "browser", userSelection);
 
                     // Waiting for other user to join the above created WebRTC room.
                     Thread.sleep(30000);
@@ -355,7 +360,7 @@ public class WebRTCConf {
 
                     // // Creating the WebRTC Room on Edge Browser.
                     System.out.println("Creating a Room on Edge Browser");
-                    createRoom(edgeConfiguration, userSelection);
+                    createSession(edgeConfiguration, "browser", userSelection);
 
                     // Waiting for other user to join the above created WebRTC room.
                     Thread.sleep(30000);
@@ -372,7 +377,7 @@ public class WebRTCConf {
 
                     // // Creating the WebRTC Room on Edge Browser.
                     System.out.println("Creating a Room on Edge Browser");
-                    createRoom(edgeConfiguration, userSelection);
+                    createSession(edgeConfiguration, "browser", userSelection);
 
                     // Waiting for other user to join the above created WebRTC room.
                     Thread.sleep(30000);
@@ -389,7 +394,7 @@ public class WebRTCConf {
 
                     // // Creating the WebRTC Room on Edge Browser.
                     System.out.println("Creating a Room on Edge Browser");
-                    createRoom(edgeConfiguration, userSelection);
+                    createSession(edgeConfiguration, "browser", userSelection);
 
                     // Waiting for other user to join the above created WebRTC room.
                     Thread.sleep(30000);
@@ -405,7 +410,7 @@ public class WebRTCConf {
                     MutableCapabilities safariConfiguration = getSafariConfiguration(userSelection);
                     // // Creating the WebRTC Room on Safari Browser.
                     System.out.println("Creating a Room on Safari Browser");
-                    createRoom(safariConfiguration, userSelection);
+                    createSession(safariConfiguration, "browser", userSelection);
 
                     // Waiting for other user to join the above created WebRTC room.
                     Thread.sleep(30000);
@@ -426,7 +431,28 @@ public class WebRTCConf {
                     System.out.println("Creating a Room on Android Mobile Browser");
                     // // Creating the WebRTC Room on Safari Browser.
                     System.out.println("Creating a Room on Android Browser");
-                    createRoom(AndroidConfiguration, userSelection);
+                    createSession(AndroidConfiguration, "android", userSelection);
+
+                    // Waiting for other user to join the above created WebRTC room.
+                    Thread.sleep(30000);
+
+                    // // Joining the above created Room on Chrome Browser.
+                    // System.out.println("Joining the Room on Firefox Browser");
+                    // joinRoom(chromeConfiguration, roomId, true, 80000, userSelection);
+
+                    break;
+                case "5.3":
+                    System.out.println("Your test would execute on Android Browser");
+                    // Creating capabilities for Android Mobile Browser.
+                    AndroidConfiguration = getAndroidConfiguration(userSelection);
+                    // // Creating capabilities for iOS Mobile Browser.
+                    // MutableCapabilities iOSConfiguration = getiOSConfiguration(userSelection);
+
+                    // Creating the WebRTC Room on Android Mobile Browser.
+                    System.out.println("Creating a Room on Android Mobile Browser");
+                    // // Creating the WebRTC Room on Safari Browser.
+                    System.out.println("Creating a Room on Android Browser");
+                    createSession(AndroidConfiguration, "android", userSelection);
 
                     // Waiting for other user to join the above created WebRTC room.
                     Thread.sleep(30000);
@@ -442,7 +468,7 @@ public class WebRTCConf {
                     MutableCapabilities iOSConfiguration = getiOSConfiguration(userSelection);
                     // // Creating the WebRTC Room on iOS Mobile Browser.
                     System.out.println("Creating a Room on iOS Mobile Browser");
-                    createRoom(iOSConfiguration, userSelection);
+                    createSession(iOSConfiguration, "iOS", userSelection);
 
                     // Waiting for other user to join the above created WebRTC room.
                     Thread.sleep(30000);
@@ -461,7 +487,7 @@ public class WebRTCConf {
                 // MutableCapabilities safariConfiguration = getSafariConfiguration();
 
                 // // Creating the WebRTC Room on Edge Browser.
-                // createRoom(edgeConfiguration, roomId, false, 30000, userSelection);
+                // createSession(edgeConfiguration, roomId, false, 30000, userSelection);
 
                 // // Waiting for other user to join the above created WebRTC room.
                 // Thread.sleep(35000);
@@ -480,7 +506,7 @@ public class WebRTCConf {
 
                 // // Creating the WebRTC Room on Android Mobile Browser.
                 // System.out.println("Creating a Room on Android Mobile Browser");
-                // createRoom(AndroidConfiguration, roomId, false, 30000, userSelection);
+                // createSession(AndroidConfiguration, roomId, false, 30000, userSelection);
 
                 // // Waiting for other user to join the above created WebRTC room.
                 // Thread.sleep(35000);
