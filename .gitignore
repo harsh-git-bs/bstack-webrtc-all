@@ -6,3 +6,4 @@ src/test
 .project
 .classpath
 .DS_Store
+src/main/java/caps.java

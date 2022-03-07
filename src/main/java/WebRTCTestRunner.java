@@ -1,13 +1,13 @@
 import java.io.File;
 import java.net.URL;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
 
-import io.appium.java_client.AppiumDriver;
+import com.browserstack.local.Local;
+
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.ios.IOSElement;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -16,47 +16,50 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class WebRTCTestRunner implements Runnable {
 
-    // public static final String USERNAME = System.getenv("BROWSERSTACK_USERNAME");
-    // public static final String ACCESS_KEY =
-    // System.getenv("BROWSERSTACK_ACCESS_KEY");
-
     public static final String HUB_URL = "https://hub-cloud.browserstack.com/wd/hub";
     WebDriver driver = null;
     AndroidDriver<WebElement> androidDriver = null;
     IOSDriver<IOSElement> iOSDriver = null;
     String appRTCURL = "https://webrtc.github.io/samples/src/content/devices/input-output/";
-    // String roomId = null;
     String deviceType = null;
-    // boolean joinExisting = false;
     String userSelection = null;
-    // long duration = 15000;
     MutableCapabilities options = null;
 
     public WebRTCTestRunner(final MutableCapabilities options, final String deviceType, final String userSelection) {
         this.options = options;
-        // this.roomId = roomId;
-        // this.joinExisting = joinExisting;
-        // this.duration = duration;
         this.deviceType = deviceType;
         this.userSelection = userSelection;
     }
 
-    // test
     public final void run() {
+        Local bsLocal = new Local();
 
         try {
+
             // Creating Remote WebDriver based on the capabilites defined in
             // WebRTCConf.java.
 
-            //
+            if (userSelection.equalsIgnoreCase("1.3") || userSelection.equalsIgnoreCase("3.3")) {
 
+                HashMap<String, String> bsLocalArgs = new HashMap<String, String>();
+                bsLocalArgs.put("key", System.getenv("BROWSERSTACK_ACCESS_KEY"));
+                bsLocalArgs.put("f", Config.getLocalFolderPath());
+                bsLocal.start(bsLocalArgs);
+            }
             if (deviceType.equalsIgnoreCase("browser")) {
                 driver = new RemoteWebDriver(new URL(HUB_URL), options);
-                // driver.manage().window().maximize();
+                driver.manage().window().maximize();
+
                 if (userSelection.equalsIgnoreCase("1.3") || userSelection.equalsIgnoreCase("3.3")) {
-                    driver.get("http://harsh1.browserstack.com:9890/sample_960x400_ocean_with_audio.mjpeg");
-                    Thread.sleep(20000);
-                    // ((RemoteWebDriver) driver).setFileDetector(new LocalFileDetector());
+
+                    driver.get("http://" + System.getenv("BROWSERSTACK_USERNAME") +
+                            ".browserstack.com/"
+                            + Config.getCustomVideoFile());
+                    driver.get("http://" + System.getenv("BROWSERSTACK_USERNAME") +
+                            ".browserstack.com/"
+                            + Config.getCustomAudioFile());
+
+                    ((RemoteWebDriver) driver).setFileDetector(new LocalFileDetector());
                 }
                 driver.get(appRTCURL);
                 Thread.sleep(5000);
@@ -64,9 +67,14 @@ public class WebRTCTestRunner implements Runnable {
             } else if (deviceType.equalsIgnoreCase("android")) {
                 androidDriver = new AndroidDriver<WebElement>(new URL(HUB_URL), options);
                 if (userSelection.equalsIgnoreCase("5.3")) {
-                    androidDriver.pushFile("/data/local/tmp/sample_960x400_ocean_with_audio.mjpeg",
-                            new File("/Users/harsh/Downloads/dummy/sample_960x400_ocean_with_audio.mjpeg"));
-                    Thread.sleep(20000);
+                    System.out.println("/data/local/tmp/" + Config.getCustomVideoFile());
+                    System.out.println(Config.getLocalFolderPath()
+                            + "/" + Config.getCustomVideoFile());
+
+                    androidDriver.pushFile("/data/local/tmp/" + Config.getCustomVideoFile(),
+                            new File(Config.getLocalFolderPath()
+                                    + "/" + Config.getCustomVideoFile()));
+
                 }
                 androidDriver.get(appRTCURL);
                 Thread.sleep(5000);
@@ -75,42 +83,16 @@ public class WebRTCTestRunner implements Runnable {
                 iOSDriver.get(appRTCURL);
                 Thread.sleep(5000);
             }
-
-            // if (userSelection.equalsIgnoreCase("5.1") ||
-            // userSelection.equalsIgnoreCase("5.3")) {
-            // androidDriver = new AndroidDriver<WebElement>(new URL(HUB_URL), options);
-            // } else {
-            // driver = new RemoteWebDriver(new URL(HUB_URL), options);
-            // }
-
-            // // Creating new WebRTC Room with generated roomID
-
-            // if (userSelection.equalsIgnoreCase("5.1") ||
-            // userSelection.equalsIgnoreCase("5.3")) {
-
-            // // ((RemoteWebDriver) driver).setFileDetector(new LocalFileDetector());
-            // //
-            // driver.get("http://harsh1.browserstack.com:9890/sample_960x400_ocean_with_audio.mjpeg");
-            // androidDriver.pushFile("/data/local/tmp/sample_960x400_ocean_with_audio.mjpeg",
-            // new
-            // File("/Users/harsh/Downloads/dummy/sample_960x400_ocean_with_audio.mjpeg"));
-            // Thread.sleep(20000);
-            // androidDriver.get(appRTCURL);
-
-            // }
-            // if (userSelection.equalsIgnoreCase("1.3") ||
-            // userSelection.equalsIgnoreCase("3.3")) {
-            // driver.manage().window().maximize();
-            // driver.get("http://harsh1.browserstack.com:9890/sample_960x400_ocean_with_audio.mjpeg");
-            // Thread.sleep(20000);
-            // ((RemoteWebDriver) driver).setFileDetector(new LocalFileDetector());
-            // }
-            // // driver.get(appRTCURL);
-            // Thread.sleep(5000);
-
+            System.out.println("Test successfully executed!");
         } catch (Exception ex) {
+            System.out.println("Test execution failed!");
             ex.printStackTrace();
         } finally {
+            try {
+                bsLocal.stop();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             if (driver != null) {
 
                 driver.quit();
@@ -126,77 +108,3 @@ public class WebRTCTestRunner implements Runnable {
         }
     }
 }
-
-// try {
-// // Creating Remote WebDriver based on the capabilites defined in
-// // WebRTCConf.java.
-// driver = new RemoteWebDriver(new URL(HUB_URL), options);
-
-// //
-// driver.get("http://samiran11.browserstack.com/sample_960x400_ocean_with_audio.mjpeg");
-// try {
-// Thread.sleep(20000);
-// } catch (InterruptedException e1) {
-
-// e1.printStackTrace();
-// }
-// ((RemoteWebDriver) driver).setFileDetector(new LocalFileDetector());
-
-// // Creating new WebRTC Room with generated roomID
-// if (!joinExisting) {
-
-// if (userSelection != 3) {
-// driver.manage().window().maximize();
-// }
-
-// // driver.get("https://appr.tc/");
-// driver.get(appRTCURL);
-// WebElement roomIdElement = driver.findElement(By.id("room-id-input"));
-// roomIdElement.clear();
-// roomIdElement.sendKeys(roomId);
-// WebElement joinElement = driver.findElement(By.id("join-button"));
-// joinElement.click();
-
-// }
-// // Joining the WebRTC Room with generated roomID
-// else {
-// // if (userSelection != 3) {
-// // driver.manage().window().maximize();
-// // }
-
-// // driver.get(appRTCURL + "r/" + roomId);
-
-// // WebElement joinElement = driver.findElement(By.id("confirm-join-button"));
-// // WebDriverWait wait = new WebDriverWait(driver, 10);
-// // wait.until(ExpectedConditions.elementToBeClickable(joinElement));
-// // joinElement.click();
-
-// if (userSelection != 3) {
-// driver.manage().window().maximize();
-// }
-
-// // driver.get("https://appr.tc/");
-// driver.get(appRTCURL);
-// WebElement roomIdElement = driver.findElement(By.id("room-id-input"));
-// roomIdElement.clear();
-// roomIdElement.sendKeys(roomId);
-// WebElement joinElement = driver.findElement(By.id("join-button"));
-// joinElement.click();
-
-// }
-
-// try {
-// Thread.sleep(duration);
-// } catch (InterruptedException e) {
-// e.printStackTrace();
-// }
-
-// } catch (Exception ex) {
-// ex.printStackTrace();
-// } finally {
-// if (driver != null) {
-// driver.quit();
-// }
-// }
-// }
-// }
