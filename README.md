@@ -40,9 +40,9 @@ This repository showcases running of WebRTC based application on Browserstack on
 
 ---
 
-## BrowserStack
+##<img  src="https://avatars.githubusercontent.com/u/1119453?s=200&v=4" width="40"> BrowserStack
 
-<img  src="https://avatars.githubusercontent.com/u/1119453?s=200&v=4" width="40">[BrowserStack](https://browserstack.com) provides instant access to 3,000+ real mobile devices and browsers on a highly reliable cloud infrastructure that effortlessly scales as testing needs grow.
+[BrowserStack](https://browserstack.com) provides instant access to 3,000+ real mobile devices and browsers on a highly reliable cloud infrastructure that effortlessly scales as testing needs grow.
 
 ### Prerequisites
 
